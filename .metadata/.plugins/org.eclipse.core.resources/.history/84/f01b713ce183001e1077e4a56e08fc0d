@@ -1,0 +1,5 @@
+package es.actividad.cliente.entidad;
+
+public class Libros {
+
+}

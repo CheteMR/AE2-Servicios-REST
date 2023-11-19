@@ -1,0 +1,31 @@
+package es.actividad.cliente.servicio;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import es.actividad.cliente.entidad.Libros;
+
+@Service
+public class SevicioProxyLibros {
+	
+	public static final String URL = "http://localhost:8080/libros/";
+	
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	public Libros obtener(int id) {
+		try {
+			ResponseEntity<Libros> re = restTemplate.getForEntity(URL + id, Libros.class);
+			HttpStatus hs= re.getStatusCode();
+			if(hs == HttpStatus.OK) {
+				return
+				
+			}
+		}
+	}
+
+}

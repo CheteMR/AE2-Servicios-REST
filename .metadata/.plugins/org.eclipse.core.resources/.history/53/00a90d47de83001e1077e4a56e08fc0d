@@ -1,0 +1,5 @@
+package es.actividad.modelo.entidad;
+
+public class Libros {
+
+}

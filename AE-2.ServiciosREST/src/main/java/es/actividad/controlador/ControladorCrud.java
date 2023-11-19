@@ -1,0 +1,112 @@
+package es.actividad.controlador;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import es.actividad.modelo.entidad.Libros;
+import es.actividad.modelo.persistencia.DaoLibros;
+
+@RestController
+
+public class ControladorCrud {
+	
+	@Autowired
+	private DaoLibros daoLibros;
+        
+	
+	
+	//  ESTABLECEMOS LOS CRUD
+	
+	//Buscamos por ID, por lo que la URL sería :
+    //"http://localhost:8080/libros/ID"
+    //el path /{id}
+
+	@GetMapping(path="libros/{id}", produces = MediaType.APPLICATION_JSON_VALUE )
+	public ResponseEntity<Libros> getLibros(@PathVariable("id") int id){
+		System.out.println("Buscando libro con id : " +id);
+		Libros l = daoLibros.get(id);
+		if(l != null) {
+			return new ResponseEntity<Libros>(l,HttpStatus.OK);
+		}else {
+			return new ResponseEntity<Libros> (HttpStatus.NOT_FOUND);
+		}
+			
+	 }
+	
+	// Ahora utilizamos Post para dar de alta un libro, y devolvemos un 201 de que ha sido creado
+	
+	@PostMapping(path="libros",consumes=MediaType.APPLICATION_JSON_VALUE,
+			produces=MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Libros> altaLibro(@RequestBody Libros l) {
+		System.out.println("altaLibro: objeto libro: " + l);
+		daoLibros.add(l);
+		return new ResponseEntity<Libros>(l,HttpStatus.CREATED);
+		
+	}
+	
+	@GetMapping(path="libros",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Libros>> libros(
+			@RequestParam(name="titulo",required=false) String titulo) {
+		List<Libros> libros = null;
+		//Si no me viene el titulo, devolvemos toda la lista
+		if(titulo == null) {
+			System.out.println("Aquí te detallo los libros que están disponibles");
+			libros = daoLibros.list();			
+		}else {
+			System.out.println("Listando los libros por titulo: " + titulo);
+			libros = daoLibros.listByTitulo(titulo);
+		}
+		System.out.println(libros);
+		return new ResponseEntity<List<Libros>>(libros,HttpStatus.OK);
+	}
+	
+	// Ahora utilizamos PUT, es una modificación de libros por id
+	
+	@PutMapping(path="libros/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Libros> modificarPersona(
+			@PathVariable("id") int id, 
+			@RequestBody Libros l) {
+		System.out.println("ID a modificar: " + id);
+		System.out.println("Datos a modificar: " + l);
+		l.setId(id);
+		Libros lUpdate = daoLibros.update(l);
+		if(lUpdate != null) {
+			return new ResponseEntity<Libros>(HttpStatus.OK);//pertece al código 200, esta ok
+		}else {
+			return new ResponseEntity<Libros>(HttpStatus.NOT_FOUND);//NOT FOUND pertenece al código http No encontrado
+		}
+	}
+	
+	//Ahora utilizamos DELETE, borrar un libro
+	
+	@DeleteMapping(path="libros/{id}")
+	public ResponseEntity<Libros> borrarLibro(@PathVariable("id") int id) {
+		System.out.println("ID a borrar: " + id);
+		Libros l = daoLibros.delete(id);
+		if(l != null) {
+			return new ResponseEntity<Libros>(l,HttpStatus.OK);//200 OK
+		}else {
+			return new ResponseEntity<Libros>(HttpStatus.NOT_FOUND);//404 NOT FOUND
+		}
+	}
+	
+	
+	
+}
+
+
