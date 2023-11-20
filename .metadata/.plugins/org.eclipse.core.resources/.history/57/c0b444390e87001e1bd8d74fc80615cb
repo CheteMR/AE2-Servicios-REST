@@ -1,0 +1,5 @@
+package es.actividad.cliente.servicio;
+
+public class ClienteREST {
+
+}

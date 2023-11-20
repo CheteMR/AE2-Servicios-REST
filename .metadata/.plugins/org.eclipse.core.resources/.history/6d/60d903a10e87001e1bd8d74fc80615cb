@@ -1,0 +1,173 @@
+package es.actividad.cliente.servicio;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import es.actividad.cliente.entidad.Libros;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Scanner;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ClienteREST {
+
+    private static final String BASE_URL = "http://localhost:8080/libros"; 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int opcion;
+        do {
+            mostrarMenu();
+            opcion = scanner.nextInt();
+            scanner.nextLine(); // 
+
+            switch (opcion) {
+                case 1:
+                    darDeAltaLibro(scanner);
+                    break;
+                case 2:
+                    darDeBajaLibro(scanner);
+                    break;
+                case 3:
+                    modificarLibro(scanner);
+                    break;
+                case 4:
+                    obtenerLibroPorId(scanner);
+                    break;
+                case 5:
+                    listarTodosLosLibros();
+                    break;
+                case 6:
+                    System.out.println("Saliendo...");
+                    break;
+                default:
+                    System.out.println("Opción no válida. Inténtalo de nuevo.");
+            }
+
+        } while (opcion != 6);
+    }
+
+    private static void mostrarMenu() {
+        System.out.println("Menú:");
+        System.out.println("1. Dar de alta un libro");
+        System.out.println("2. Dar de baja un libro por ID");
+        System.out.println("3. Modificar un libro por ID");
+        System.out.println("4. Obtener un libro por ID");
+        System.out.println("5. Listar todos los libros");
+        System.out.println("6. Salir");
+        System.out.print("Seleccione una opción: ");
+    }
+
+    @Autowired
+    private static void darDeAltaLibro(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el título del libro: ");
+            String titulo = scanner.nextLine();
+
+            System.out.print("Ingrese la editorial del libro: ");
+            String editorial = scanner.nextLine();
+
+            System.out.print("Ingrese la nota del libro: ");
+            double nota = scanner.nextDouble();
+
+            Libros nuevoLibro = new Libros(0, titulo, editorial, nota);
+
+            String requestBody = objectMapper.writeValueAsString(nuevoLibro);
+
+            // Enviar la solicitud POST al servidor REST para dar de alta el libro
+            // Usar la biblioteca que prefieras para realizar solicitudes HTTP (p. ej., Apache HttpClient, HttpURLConnection)
+            // Aquí se muestra un ejemplo básico con HttpURLConnection
+            // Nota: En un entorno de producción, es recomendable manejar las excepciones de manera más robusta
+
+            HttpURLConnection connection = (HttpURLConnection) new URL(BASE_URL).openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                System.out.println("Libro dado de alta exitosamente.");
+            } else {
+                System.out.println("Error al dar de alta el libro. Código de respuesta: " + responseCode);
+            }
+
+            connection.disconnect();
+        } catch (Exception e) {
+            System.err.println("Error al dar de alta el libro: " + e.getMessage());
+        }
+    }
+
+    private static void darDeBajaLibro(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el ID del libro a dar de baja: ");
+            int id = scanner.nextInt();
+
+            // Enviar la solicitud DELETE al servidor REST para dar de baja el libro por ID
+            // Implementa la lógica necesaria aquí
+        } catch (Exception e) {
+            System.err.println("Error al dar de baja el libro: " + e.getMessage());
+        }
+    }
+
+    private static void modificarLibro(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el ID del libro a modificar: ");
+            int id = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer del scanner
+
+            System.out.print("Ingrese el nuevo título del libro: ");
+            String nuevoTitulo = scanner.nextLine();
+
+            System.out.print("Ingrese la nueva editorial del libro: ");
+            String nuevaEditorial = scanner.nextLine();
+
+            System.out.print("Ingrese la nueva nota del libro: ");
+            double nuevaNota = scanner.nextDouble();
+
+            Libros libroModificado = new Libros(id, nuevoTitulo, nuevaEditorial, nuevaNota);
+
+            String requestBody = objectMapper.writeValueAsString(libroModificado);
+
+            // Enviar la solicitud PUT al servidor REST para modificar el libro por ID
+            // Implementa la lógica necesaria aquí
+        } catch (Exception e) {
+            System.err.println("Error al modificar el libro: " + e.getMessage());
+        }
+    }
+
+    private static void obtenerLibroPorId(Scanner scanner) {
+        try {
+            System.out.print("Ingrese el ID del libro a obtener: ");
+            int id = scanner.nextInt();
+
+            // Enviar la solicitud GET al servidor REST para obtener el libro por ID
+            // Implementa la lógica necesaria aquí
+        } catch (Exception e) {
+            System.err.println("Error al obtener el libro: " + e.getMessage());
+        }
+    }
+
+    private static void listarTodosLosLibros() {
+        try {
+            // Enviar la solicitud GET al servidor REST para obtener todos los libros
+            // Implementa la lógica necesaria aquí
+        } catch (Exception e) {
+            System.err.println("Error al listar los libros: " + e.getMessage());
+        }
+    }
+}

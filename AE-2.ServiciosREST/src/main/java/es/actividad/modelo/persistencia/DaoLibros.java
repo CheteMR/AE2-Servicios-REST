@@ -23,6 +23,8 @@ public class DaoLibros {
         libros.add(new Libros(contador++, "El asombroso Spiderman 1", "Panini", 9.67));
 	}
 	
+	
+	
 	public Libros get (int posicion) {
 		try {
 			return libros.get(posicion);

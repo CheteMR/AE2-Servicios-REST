@@ -1,0 +1,53 @@
+package es.actividad.cliente;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import es.actividad.cliente.entidad.Libros;
+import es.actividad.cliente.servicio.SevicioProxyLibros;
+
+@SpringBootApplication
+public class Application implements CommandLineRunner {
+	
+	@Autowired
+	private SevicioProxyLibros spl;
+	
+	@Autowired
+	private ApplicationContext context;
+	
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		return builder.build();
+	}
+
+	public static void main(String[] args) {
+		System.out.println("El cliente esta cargando el contexto de Spring");
+		SpringApplication.run(Application.class, args);
+		
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		System.out.println("*********** ALTA PERSONA ***************");
+		Libros libro = new Libros(0, null, null, 0);
+		libro.setId(5);
+		libro.setTitulo("El Monstruo de las Galletas");
+		libro.setEditorial("Comiendo");
+		libro.setNota(8.9);
+		
+	}
+}
+	

@@ -1,0 +1,178 @@
+package es.actividad.cliente;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import es.actividad.cliente.entidad.Libros;
+import es.actividad.cliente.servicio.SevicioProxyLibros;
+import es.actividad.controlador.ControladorCrud;
+import es.actividad.modelo.persistencia.DaoLibros;
+
+@SpringBootApplication
+public class Application implements CommandLineRunner {
+	
+	 //Scanner scanner = new Scanner(System.in);
+	 
+	 @Autowired
+	 private static SevicioProxyLibros spl;
+	 
+	 @Autowired
+		private ApplicationContext context;
+	 
+	 @Bean
+		public RestTemplate restTemplate(RestTemplateBuilder builder) {
+			return builder.build();
+	 }
+	 
+	//Método main que lanza la aplicación
+	public static void main(String[] args) {
+		System.out.println("Cargamos el cliente");
+		SpringApplication.run(Application.class, args);
+		
+	}
+
+
+	@Override
+	public void run(String... args) throws Exception {
+		
+		 Scanner scanner = new Scanner(System.in);
+		
+		int opcion;
+		
+		do {
+			mostrarMenu();
+			opcion = obtenerOpcionUsuario();
+			
+			switch (opcion) {
+            case 1:
+                darDeAltaLibro();
+                break;
+            case 2:
+                darDeBajaLibro();
+                break;
+            case 3:
+                modificarLibro();
+                break;
+            case 4:
+                obtenerLibroPorId();
+                break;
+            case 5:
+                listarLibros();
+                break;
+            case 6:
+                System.out.println("Saliendo de la aplicación. ¡Hasta luego!");
+                break;
+            default:
+                System.out.println("Opción no válida. Inténtalo de nuevo.");
+		}
+	}while (opcion !=6);
+}
+	
+	private static void mostrarMenu() {
+		 System.out.println("=== ¿Qué opción quieres elegir? ===");
+	        System.out.println("1. Dar de alta un libro");
+	        System.out.println("2. Dar de baja un libro por ID");
+	        System.out.println("3. Modificar un libro por ID");
+	        System.out.println("4. Obtener un libro por ID");
+	        System.out.println("5. Listar todos los libros");
+	        System.out.println("6. Salir");
+	}
+	
+	static  Scanner scanner = new Scanner(System.in);
+	 private static int obtenerOpcionUsuario() {
+		 
+	        System.out.print("Ingresa el número de opción: ");
+	        while (!scanner.hasNextInt()) {
+	            System.out.print("Ingresa un número válido: ");
+	            scanner.next();
+	        }
+	        return scanner.nextInt();
+	    }
+	 
+	 private static void darDeAltaLibro() {
+	        System.out.println("Ingresa los datos del nuevo libro:");
+	        System.out.print("ID: ");
+	        int id = scanner.nextInt();
+	        scanner.nextLine(); // Consumir la nueva línea después de nextInt()
+	        System.out.print("Título: ");
+	        String titulo = scanner.nextLine();
+	        System.out.print("Editorial: ");
+	        String editorial = scanner.nextLine();
+	        System.out.print("Nota: ");
+	        double nota = scanner.nextDouble();
+
+	        Libros nuevoLibro = new Libros(id, titulo, editorial, nota);
+	       spl.alta(nuevoLibro);// Libros lLibro = spl.alta(libro);       //libroRestClient.agregarLibro(nuevoLibro);
+	        System.out.println("Libro agregado con éxito");
+	    }
+	 
+	 private static void darDeBajaLibro() {
+	        System.out.print("Ingrese el ID del libro a dar de baja: ");
+	        int id = scanner.nextInt();
+	        spl.borrar(id);//libroRestClient.eliminarLibroPorId(id);
+	        System.out.println("Libro eliminado con éxito");
+	    }
+	 
+	 private static void modificarLibro() {
+	        System.out.print("Ingrese el ID del libro a modificar: ");
+	        int id = scanner.nextInt();
+	        scanner.nextLine(); // Consumir la nueva línea después de nextInt()
+
+	        Libros libroExistente = spl.obtener(id);  //libroRestClient.obtenerLibroPorId(id);
+	        if (libroExistente != null) {
+	            System.out.println("Ingrese los nuevos datos del libro:");
+	            System.out.print("Título: ");
+	            String nuevoTitulo = scanner.nextLine();
+	            System.out.print("Editorial: ");
+	            String nuevaEditorial = scanner.nextLine();
+	            System.out.print("Nota: ");
+	            double nuevaNota = scanner.nextDouble();
+
+	            Libros libroModificado = new Libros(id, nuevoTitulo, nuevaEditorial, nuevaNota);
+	            spl.modificar(libroExistente); //libroRestClient.modificarLibro(libroModificado);
+	            System.out.println("Libro modificado con éxito");
+	        } else {
+	            System.out.println("Libro no encontrado");
+	        }
+	    }
+	 
+	 private static void obtenerLibroPorId() {
+	        System.out.print("Ingrese el ID del libro a obtener: ");
+	        int id = scanner.nextInt();
+	        Libros libro = spl.obtener(id); //libroRestClient.obtenerLibroPorId(id);
+	        if (libro != null) {
+	            System.out.println("Libro encontrado: " + libro);
+	        } else {
+	            System.out.println("Libro no encontrado");
+	        }
+	    }
+	 
+	 private static void listarLibros() {
+	        System.out.println("Listado de libros:");
+	        List<Libros> libro = spl.listar(null);//libroRestClient.listarLibros();
+	        if (libro != null) {
+	            for (Libros libros : libro) {
+	                System.out.println(libro);
+	            }
+	        } else {
+	            System.out.println("Error al obtener la lista de libros");
+	        }
+	    }
+	
+}
+		

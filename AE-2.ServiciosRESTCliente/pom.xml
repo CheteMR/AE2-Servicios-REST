@@ -17,15 +17,20 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-		<dependency>
+	 	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		</dependency>  
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		 <dependency>
+			<groupId>es.actividad</groupId>
+			<artifactId>AE-2.ServiciosREST</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
