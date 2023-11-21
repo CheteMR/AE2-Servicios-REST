@@ -78,7 +78,7 @@ public class ControladorCrud {
 	// Ahora utilizamos PUT, es una modificación de libros por id
 	
 	@PutMapping(path="libros/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Libros> modificarPersona(
+	public ResponseEntity<Libros> modificarLibro(
 			@PathVariable("id") int id, 
 			@RequestBody Libros l) {
 		System.out.println("ID a modificar: " + id);
