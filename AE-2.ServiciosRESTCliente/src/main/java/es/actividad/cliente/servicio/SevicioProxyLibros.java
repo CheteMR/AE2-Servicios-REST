@@ -89,8 +89,8 @@ public class SevicioProxyLibros {
 			
 			ResponseEntity<Libros[]> response =
 					  restTemplate.getForEntity(URL + queryParams,Libros[].class);
-			Libros[] arrayPersonas = response.getBody();
-			return Arrays.asList(arrayPersonas);
+			Libros[] arrayLibros = response.getBody();
+			return Arrays.asList(arrayLibros);
 		} catch (HttpClientErrorException e) {
 			System.out.println("listar -> Error al obtener la lista de personas");
 		    System.out.println("listar -> Codigo de respuesta: " + e.getStatusCode());
